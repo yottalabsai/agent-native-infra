@@ -1,3 +1,13 @@
+// --- GPU Catalog ---
+
+export interface GpuType {
+  gpuType: string;
+  displayName: string;
+  vramGb: number;
+  pricePerHour: number;
+  regions: string[];
+}
+
 // Standard Yotta API response wrapper
 export interface ApiResponse<T> {
   message: string;

@@ -1,0 +1,74 @@
+[
+  {
+    "gpuType": "RTX_4090_24G",
+    "displayName": "NVIDIA RTX 4090",
+    "vramGb": 24,
+    "pricePerHour": 0.00,
+    "regions": [
+      "us-east-1"
+    ]
+  },
+  {
+    "gpuType": "RTX_5090_32G",
+    "displayName": "NVIDIA RTX 5090",
+    "vramGb": 32,
+    "pricePerHour": 0.00,
+    "regions": [
+      "us-east-1"
+    ]
+  },
+  {
+    "gpuType": "A100_80G",
+    "displayName": "NVIDIA A100",
+    "vramGb": 80,
+    "pricePerHour": 0.00,
+    "regions": [
+      "us-east-1"
+    ]
+  },
+  {
+    "gpuType": "H100_80G",
+    "displayName": "NVIDIA H100",
+    "vramGb": 80,
+    "pricePerHour": 0.00,
+    "regions": [
+      "us-east-1"
+    ]
+  },
+  {
+    "gpuType": "H200_141G",
+    "displayName": "NVIDIA H200",
+    "vramGb": 141,
+    "pricePerHour": 0.00,
+    "regions": [
+      "us-east-1"
+    ]
+  },
+  {
+    "gpuType": "B200_192G",
+    "displayName": "NVIDIA B200",
+    "vramGb": 192,
+    "pricePerHour": 0.00,
+    "regions": [
+      "us-east-1"
+    ]
+  },
+  {
+    "gpuType": "B300_288G",
+    "displayName": "NVIDIA B300",
+    "vramGb": 288,
+    "pricePerHour": 0.00,
+    "regions": [
+      "us-east-1"
+    ]
+  },
+  {
+    "gpuType": "RTX_PRO_6000_96G",
+    "displayName": "NVIDIA RTX PRO 6000",
+    "vramGb": 96,
+    "pricePerHour": 0.00,
+    "regions": [
+      "us-east-1"
+    ]
+  }
+]
