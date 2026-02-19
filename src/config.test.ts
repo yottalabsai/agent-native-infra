@@ -19,7 +19,7 @@ describe("getConfig", () => {
     delete process.env.YOTTA_API_BASE_URL;
     const { getConfig } = await import("./config.js");
     const config = getConfig();
-    expect(config.apiBaseUrl).toBe("https://api.yotta.com");
+    expect(config.apiBaseUrl).toBe("https://api.test.yottalabs.ai");
   });
 
   it("uses custom base URL from env", async () => {

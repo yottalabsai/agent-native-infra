@@ -153,16 +153,16 @@ describe("YottaClient", () => {
     it("scaleEndpointWorkers sends PUT with count query param", async () => {
       const fetchMock = mockFetch(null);
       const client = await freshClient();
-      await client.scaleEndpointWorkers("ep-1", 4);
+      await client.scaleEndpointWorkers(1, 4);
       const [url, opts] = fetchMock.mock.calls[0];
-      expect(url).toBe("https://test.yotta.com/v2/endpoints/ep-1/workers?count=4");
+      expect(url).toBe("https://test.yotta.com/v2/endpoints/1/workers?count=4");
       expect(opts.method).toBe("PUT");
     });
 
     it("listEndpointTasks builds query string", async () => {
       const fetchMock = mockFetch({ pageNumber: 1, pageSize: 10, totalRow: 0, records: [] });
       const client = await freshClient();
-      await client.listEndpointTasks("ep-1", { status: 2, pageNumber: 1, pageSize: 5 });
+      await client.listEndpointTasks(1, { status: 2, pageNumber: 1, pageSize: 5 });
       const [url] = fetchMock.mock.calls[0];
       expect(url).toContain("status=2");
       expect(url).toContain("pageNumber=1");
@@ -172,13 +172,13 @@ describe("YottaClient", () => {
 
   describe("Registry", () => {
     it("createRegistryCredential sends POST", async () => {
-      const fetchMock = mockFetch({ id: 1, name: "test", type: "DOCKER_HUB", createdAt: "2024-01-01T00:00:00Z" });
+      const fetchMock = mockFetch({ id: 1, name: "test", createdAt: "2024-01-01T00:00:00Z" });
       const client = await freshClient();
-      await client.createRegistryCredential({ name: "test", type: "DOCKER_HUB", username: "u", password: "p" });
+      await client.createRegistryCredential({ name: "test", username: "u", password: "p" });
       const [url, opts] = fetchMock.mock.calls[0];
       expect(url).toBe("https://test.yotta.com/v2/container-registry-auths");
       expect(opts.method).toBe("POST");
-      expect(JSON.parse(opts.body)).toMatchObject({ name: "test", type: "DOCKER_HUB" });
+      expect(JSON.parse(opts.body)).toMatchObject({ name: "test", username: "u" });
     });
   });
 });

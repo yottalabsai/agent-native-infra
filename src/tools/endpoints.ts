@@ -38,7 +38,7 @@ export function registerEndpointTools(server: McpServer): void {
   server.tool(
     "endpoint_get",
     "Get details of a specific endpoint by ID",
-    { id: z.string().describe("Endpoint ID") },
+    { id: z.number().describe("Endpoint ID") },
     async ({ id }) => {
       const ep = await getClient().getEndpoint(id);
       return { content: [{ type: "text" as const, text: JSON.stringify(ep, null, 2) }] };
@@ -61,7 +61,7 @@ export function registerEndpointTools(server: McpServer): void {
     "endpoint_update",
     "Update an endpoint (name, workers, env vars). Cannot change image.",
     {
-      id: z.string().describe("Endpoint ID"),
+      id: z.number().describe("Endpoint ID"),
       name: z.string().optional().describe("New name"),
       workers: z.number().optional().describe("New worker count"),
       envVars: z.array(envVarSchema).optional().describe("New environment variables"),
@@ -75,7 +75,7 @@ export function registerEndpointTools(server: McpServer): void {
   server.tool(
     "endpoint_delete",
     "Delete an endpoint. This action is irreversible.",
-    { id: z.string().describe("Endpoint ID") },
+    { id: z.number().describe("Endpoint ID") },
     async ({ id }) => {
       await getClient().deleteEndpoint(id);
       return { content: [{ type: "text" as const, text: `Endpoint ${id} deleted.` }] };
@@ -85,7 +85,7 @@ export function registerEndpointTools(server: McpServer): void {
   server.tool(
     "endpoint_stop",
     "Stop a running endpoint",
-    { id: z.string().describe("Endpoint ID") },
+    { id: z.number().describe("Endpoint ID") },
     async ({ id }) => {
       await getClient().stopEndpoint(id);
       return { content: [{ type: "text" as const, text: `Endpoint ${id} stopped.` }] };
@@ -95,7 +95,7 @@ export function registerEndpointTools(server: McpServer): void {
   server.tool(
     "endpoint_start",
     "Start a stopped endpoint",
-    { id: z.string().describe("Endpoint ID") },
+    { id: z.number().describe("Endpoint ID") },
     async ({ id }) => {
       await getClient().startEndpoint(id);
       return { content: [{ type: "text" as const, text: `Endpoint ${id} started.` }] };
@@ -106,7 +106,7 @@ export function registerEndpointTools(server: McpServer): void {
     "endpoint_scale",
     "Scale the number of workers for an endpoint",
     {
-      id: z.string().describe("Endpoint ID"),
+      id: z.number().describe("Endpoint ID"),
       count: z.number().describe("Target worker count"),
     },
     async ({ id, count }) => {
@@ -119,7 +119,7 @@ export function registerEndpointTools(server: McpServer): void {
     "endpoint_list_workers",
     "List workers for an endpoint",
     {
-      id: z.string().describe("Endpoint ID"),
+      id: z.number().describe("Endpoint ID"),
       statusList: z.string().optional().describe("Filter by worker status (comma-separated)"),
     },
     async ({ id, statusList }) => {
@@ -132,7 +132,7 @@ export function registerEndpointTools(server: McpServer): void {
     "endpoint_list_tasks",
     "List tasks for a QUEUE-mode endpoint",
     {
-      id: z.string().describe("Endpoint ID"),
+      id: z.number().describe("Endpoint ID"),
       status: z.number().optional().describe("Filter: 0=PROCESSING, 1=DELIVERED, 2=SUCCESS, 3=FAILED"),
       pageNumber: z.number().optional().describe("Page number"),
       pageSize: z.number().optional().describe("Page size"),
@@ -146,7 +146,7 @@ export function registerEndpointTools(server: McpServer): void {
   server.tool(
     "endpoint_task_count",
     "Get task status counts for a QUEUE-mode endpoint",
-    { id: z.string().describe("Endpoint ID") },
+    { id: z.number().describe("Endpoint ID") },
     async ({ id }) => {
       const counts = await getClient().getEndpointTaskCount(id);
       return { content: [{ type: "text" as const, text: JSON.stringify(counts, null, 2) }] };
