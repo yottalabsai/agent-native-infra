@@ -29,13 +29,11 @@ export interface PaginatedData<T> {
 export interface RegistryCredential {
   id: number;
   name: string;
-  type: "DOCKER_HUB" | "GCR" | "ECR" | "ACR" | "PRIVATE";
   createdAt: string;
 }
 
 export interface CreateRegistryCredentialRequest {
   name: string;
-  type: "DOCKER_HUB" | "GCR" | "ECR" | "ACR" | "PRIVATE";
   username: string;
   password: string;
 }
@@ -52,6 +50,7 @@ export interface Vm {
   id: number;
   name: string;
   status: string;
+  gpuType?: string;
   gpuDisplayName: string;
   ipAddress: string;
   cpuCores: number;
@@ -62,7 +61,10 @@ export interface Vm {
   storageInGb: string;
   sshTemplate: string;
   createdAt: string;
+  updatedAt?: string;
+  terminatedAt?: string;
   isSpot: number;
+  osInfo?: string;
 }
 
 export interface CreateVmRequest {
@@ -82,16 +84,46 @@ export interface ListVmsRequest {
 
 // --- Pods ---
 
+export interface PodExposePort {
+  port: number;
+  protocol?: string;
+}
+
+export interface PodExposePortResponse {
+  port: number;
+  proxyPort?: number;
+  protocol?: string;
+  host?: string;
+  healthy?: boolean;
+  ingressUrl?: string;
+  serviceName?: string;
+}
+
 export interface Pod {
   id: number;
   name: string;
   image: string;
+  imageRegistry?: string;
   gpuType: string;
   gpuDisplayName: string;
   gpuCount: number;
+  resourceType?: string;
+  region?: string;
+  cloudType?: string;
+  containerVolumeInGb?: number;
+  shmInGb?: number;
+  singleCardVramInGb?: number;
+  singleCardRamInGb?: number;
+  singleCardVcpu?: number;
+  singleCardPrice?: number;
+  environmentVars?: { key: string; value: string }[];
+  expose?: PodExposePortResponse[];
+  initializationCommand?: string;
+  sshCmd?: string;
+  internalIp?: string;
   status: string;
   createdAt: string;
-  sshCmd?: string;
+  updatedAt?: string;
 }
 
 export interface CreatePodRequest {
@@ -99,23 +131,38 @@ export interface CreatePodRequest {
   image: string;
   gpuType: string;
   gpuCount: number;
+  region?: string;
+  regionList?: string[];
+  containerRegistryAuthId?: number;
+  imageRegistry?: string;
   containerVolumeInGb?: number;
-  envVars?: { key: string; value: string }[];
-  ports?: number[];
+  initializationCommand?: string;
+  environmentVars?: { key: string; value: string }[];
+  expose?: PodExposePort[];
 }
 
 // --- Endpoints ---
 
 export interface Endpoint {
-  id: string;
+  id: number;
   name: string;
   image: string;
-  status: string;
+  imageRegistry?: string;
+  resources?: EndpointResource[];
+  containerVolumeInGb?: number;
+  environmentVars?: { key: string; value: string }[];
+  expose?: { port: number; protocol?: string };
   totalWorkers: number;
   runningWorkers: number;
   cost: number;
-  serviceMode: "ALB" | "QUEUE" | "CUSTOM";
+  perHourPrice?: number;
+  perSecondPrice?: number;
+  serviceMode: string;
+  status: string;
+  domain?: string;
+  creator?: string;
   createdAt: string;
+  updatedAt?: string;
 }
 
 export interface EndpointResource {
@@ -137,7 +184,9 @@ export interface CreateEndpointRequest {
     protocol: string;
     proxyPort?: number;
   };
-  serviceMode: "ALB" | "QUEUE" | "CUSTOM";
+  serviceMode: string;
+  initializationCommand?: string;
+  credentialId?: number;
 }
 
 export interface UpdateEndpointRequest {
@@ -148,6 +197,15 @@ export interface UpdateEndpointRequest {
 
 export interface EndpointWorker {
   id: string;
+  region?: string;
+  gpuType?: string;
+  gpuDisplayName?: string;
+  gpuCount?: number;
+  singleCardVramInGb?: number;
+  singleCardVcpu?: number;
+  singleCardRamInGb?: number;
+  uptime?: number;
+  cost?: number;
   status: string;
 }
 

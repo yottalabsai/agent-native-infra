@@ -27,8 +27,7 @@ export function registerRegistryTools(server: McpServer): void {
     "registry_create",
     "Create a container registry credential for pulling private images",
     {
-      name: z.string().describe("Credential name"),
-      type: z.enum(["DOCKER_HUB", "GCR", "ECR", "ACR", "PRIVATE"]).describe("Registry type"),
+      name: z.string().describe("Credential name (1-20 chars, starts with letter)"),
       username: z.string().describe("Registry username"),
       password: z.string().describe("Registry password or token"),
     },

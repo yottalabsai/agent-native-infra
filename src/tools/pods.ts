@@ -7,6 +7,11 @@ const envVarSchema = z.object({
   value: z.string(),
 });
 
+const exposePortSchema = z.object({
+  port: z.number().describe("Port number (0-65535)"),
+  protocol: z.string().optional().describe("Protocol (e.g. HTTP, TCP)"),
+});
+
 export function registerPodTools(server: McpServer): void {
   server.tool(
     "pod_create",
@@ -16,9 +21,11 @@ export function registerPodTools(server: McpServer): void {
       image: z.string().describe('Docker image (e.g. "pytorch/pytorch:2.0.0-cuda11.7-cudnn8-runtime")'),
       gpuType: z.string().describe('GPU type code (e.g. "RTX_4090_24G", "A100_80G")'),
       gpuCount: z.number().describe("Number of GPUs (must be power of 2)"),
+      region: z.string().optional().describe('Region code (e.g. "us-east-1")'),
       containerVolumeInGb: z.number().optional().describe("Container volume size in GB"),
-      envVars: z.array(envVarSchema).optional().describe("Environment variables"),
-      ports: z.array(z.number()).optional().describe("Ports to expose"),
+      initializationCommand: z.string().optional().describe("Command to run on pod start"),
+      environmentVars: z.array(envVarSchema).optional().describe("Environment variables"),
+      expose: z.array(exposePortSchema).optional().describe("Ports to expose"),
     },
     async (args) => {
       const pod = await getClient().createPod(args);
@@ -41,7 +48,7 @@ export function registerPodTools(server: McpServer): void {
     "List all pods, optionally filtered by region or status",
     {
       regionList: z.string().optional().describe("Filter by regions (comma-separated)"),
-      statusList: z.string().optional().describe("Filter by status (comma-separated, e.g. RUNNING,STOPPED)"),
+      statusList: z.string().optional().describe("Filter by status (comma-separated, e.g. RUNNING,PAUSED)"),
     },
     async ({ regionList, statusList }) => {
       const pods = await getClient().listPods({ regionList, statusList });
@@ -76,16 +83,6 @@ export function registerPodTools(server: McpServer): void {
     async ({ id }) => {
       await getClient().resumePod(id);
       return { content: [{ type: "text" as const, text: `Pod ${id} resumed.` }] };
-    }
-  );
-
-  server.tool(
-    "pod_stop",
-    "Stop a running pod",
-    { id: z.number().describe("Pod ID") },
-    async ({ id }) => {
-      await getClient().stopPod(id);
-      return { content: [{ type: "text" as const, text: `Pod ${id} stopped.` }] };
     }
   );
 }

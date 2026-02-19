@@ -12,7 +12,7 @@ export function getConfig(): Config {
   if (!apiKey) throw new Error("YOTTA_API_KEY environment variable is required");
 
   _config = {
-    apiBaseUrl: (process.env.YOTTA_API_BASE_URL || "https://api.yotta.com").replace(/\/$/, ""),
+    apiBaseUrl: (process.env.YOTTA_API_BASE_URL || "https://api.test.yottalabs.ai").replace(/\/$/, ""),
     apiKey,
   };
   return _config;

@@ -36,7 +36,6 @@ describe("tool registration", () => {
       "pod_delete",
       "pod_pause",
       "pod_resume",
-      "pod_stop",
     ]);
   });
 
@@ -78,14 +77,14 @@ describe("tool registration", () => {
     ]);
   });
 
-  it("registerTools registers all 28 tools", async () => {
+  it("registerTools registers all 27 tools", async () => {
     const toolNames: string[] = [];
     const mockServer = { tool: vi.fn((...args: unknown[]) => { toolNames.push(args[0] as string); }) };
 
     const { registerTools } = await import("./index.js");
     registerTools(mockServer as any);
 
-    expect(toolNames).toHaveLength(28);
+    expect(toolNames).toHaveLength(27);
     // Spot-check one from each category
     expect(toolNames).toContain("vm_create");
     expect(toolNames).toContain("pod_list");

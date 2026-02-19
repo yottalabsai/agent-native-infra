@@ -125,17 +125,13 @@ class YottaClient {
     return this.request<unknown>("POST", `/pods/${id}/resume`);
   }
 
-  stopPod(id: number) {
-    return this.request<unknown>("POST", `/pods/${id}/stop`);
-  }
-
   // --- Endpoints ---
 
   createEndpoint(req: CreateEndpointRequest) {
     return this.request<Endpoint>("POST", "/endpoints", req);
   }
 
-  getEndpoint(id: string) {
+  getEndpoint(id: number) {
     return this.request<Endpoint>("GET", `/endpoints/${id}`);
   }
 
@@ -144,32 +140,32 @@ class YottaClient {
     return this.request<Endpoint[]>("GET", `/endpoints${qs}`);
   }
 
-  updateEndpoint(id: string, req: UpdateEndpointRequest) {
+  updateEndpoint(id: number, req: UpdateEndpointRequest) {
     return this.request<Endpoint>("PATCH", `/endpoints/${id}`, req);
   }
 
-  deleteEndpoint(id: string) {
+  deleteEndpoint(id: number) {
     return this.request<boolean>("DELETE", `/endpoints/${id}`);
   }
 
-  stopEndpoint(id: string) {
+  stopEndpoint(id: number) {
     return this.request<unknown>("POST", `/endpoints/${id}/stop`);
   }
 
-  startEndpoint(id: string) {
+  startEndpoint(id: number) {
     return this.request<unknown>("POST", `/endpoints/${id}/start`);
   }
 
-  scaleEndpointWorkers(id: string, count: number) {
+  scaleEndpointWorkers(id: number, count: number) {
     return this.request<unknown>("PUT", `/endpoints/${id}/workers?count=${count}`);
   }
 
-  listEndpointWorkers(id: string, statusList?: string) {
+  listEndpointWorkers(id: number, statusList?: string) {
     const qs = statusList ? `?statusList=${statusList}` : "";
     return this.request<EndpointWorker[]>("GET", `/endpoints/${id}/workers${qs}`);
   }
 
-  listEndpointTasks(id: string, params?: { status?: number; pageNumber?: number; pageSize?: number }) {
+  listEndpointTasks(id: number, params?: { status?: number; pageNumber?: number; pageSize?: number }) {
     const query = new URLSearchParams();
     if (params?.status !== undefined) query.set("status", String(params.status));
     if (params?.pageNumber) query.set("pageNumber", String(params.pageNumber));
@@ -178,7 +174,7 @@ class YottaClient {
     return this.request<PaginatedData<EndpointTask>>("GET", `/endpoints/${id}/tasks${qs ? `?${qs}` : ""}`);
   }
 
-  getEndpointTaskCount(id: string) {
+  getEndpointTaskCount(id: number) {
     return this.request<TaskCount>("GET", `/endpoints/${id}/tasks/count`);
   }
 }
