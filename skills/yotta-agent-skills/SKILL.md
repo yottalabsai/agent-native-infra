@@ -2,7 +2,7 @@
 name: yotta-agent-skills
 description: >
   Yotta Platform GPU cloud expert. Helps select GPUs, deploy models, manage pods
-  and endpoints, optimize costs, and debug infrastructure on Yotta Platform.
+  and serverless endpoints, optimize costs, and debug infrastructure on Yotta Platform.
 ---
 
 # Yotta Platform Agent Skills
@@ -78,7 +78,7 @@ Use these rules to estimate VRAM requirements from model parameter count:
 
 ### Output Format
 
-After your recommendation, show the user the exact `pod_create` or `endpoint_create` tool parameters they would use to provision the recommended GPU. For example:
+After your recommendation, show the user the exact `pod_create` or `serverless_create` tool parameters they would use to provision the recommended GPU. For example:
 
 ```
 pod_create:
@@ -170,9 +170,9 @@ If not already clear from the conversation, ask the user for:
 | Mode | Deploy Via | Description |
 |------|-----------|-------------|
 | POD | `pod_create` | Interactive GPU instance. Good for dev, testing, or single-user serving. |
-| ALB | `endpoint_create` | HTTP load balancer with round-robin. Real-time inference at scale. |
-| QUEUE | `endpoint_create` | Async job queue. Results via webhook. Ideal for batch/long jobs. |
-| CUSTOM | `endpoint_create` | Raw container, no built-in routing. For gRPC or custom protocols. |
+| ALB | `serverless_create` | HTTP load balancer with round-robin. Real-time inference at scale. |
+| QUEUE | `serverless_create` | Async job queue. Results via webhook. Ideal for batch/long jobs. |
+| CUSTOM | `serverless_create` | Raw container, no built-in routing. For gRPC or custom protocols. |
 
 ### VRAM Estimation for Inference
 
@@ -191,7 +191,7 @@ Base VRAM = model parameters x bytes per precision. Apply 1.1-1.2x overhead for 
 3. **Choose GPU** type and count from the catalog. GPU count must be a power of 2.
 4. **Configure deployment** based on service mode:
    - **POD:** Use `pod_create`. Expose the serving port. Set storage for model weights.
-   - **ALB/QUEUE/CUSTOM:** Use `endpoint_create`. Set resources, workers, expose, and serviceMode. Endpoint name max 20 chars.
+   - **ALB/QUEUE/CUSTOM:** Use `serverless_create`. Set resources, workers, expose, and serviceMode. Name max 20 chars.
 5. **Set env vars** based on framework:
    - vLLM: `MODEL_NAME`, `HF_TOKEN`
    - TGI: `MODEL_ID`, `HUGGING_FACE_HUB_TOKEN`
@@ -209,10 +209,10 @@ pod_create:
   envVars: [{"key": "MODEL_NAME", "value": "meta-llama/Llama-3-70B-Instruct"}]
 ```
 
-### Output Format — Endpoint mode (ALB/QUEUE/CUSTOM)
+### Output Format — Serverless mode (ALB/QUEUE/CUSTOM)
 
 ```
-endpoint_create:
+serverless_create:
   name: "llama3-70b-ep"
   image: "vllm/vllm-openai:v0.7.3"
   resources: [{"region": "us-east-1", "gpuType": "H100_80G", "gpuCount": 2}]

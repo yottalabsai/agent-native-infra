@@ -17,11 +17,11 @@ export interface ApiResponse<T> {
 
 // Pagination
 export interface PaginatedData<T> {
-  pageNumber: number;
-  pageSize: number;
-  totalPage: number;
-  totalRow: number;
-  records: T[];
+  items: T[];
+  page: number;
+  size: number;
+  total: number;
+  pages: number;
 }
 
 // --- Container Registry ---
@@ -29,11 +29,13 @@ export interface PaginatedData<T> {
 export interface RegistryCredential {
   id: number;
   name: string;
+  type: string;
   createdAt: string;
 }
 
 export interface CreateRegistryCredentialRequest {
   name: string;
+  type: string;
   username: string;
   password: string;
 }
@@ -72,22 +74,28 @@ export interface CreateVmRequest {
   region: string;
   name: string;
   isSpot?: number;
+  volumeMountPaths?: Record<string, string>;
 }
 
-export interface ListVmsRequest {
-  pageNumber: number;
-  pageSize: number;
-  search?: {
-    status?: string;
-  };
+export interface ListVmsParams {
+  page?: number;
+  size?: number;
+  status?: string;
+}
+
+export interface VmTypeRegion {
+  region: string;
+  regionName: string;
+  available: boolean;
+  vmTypeId: number;
+}
+
+export interface VmType {
+  gpuType: string;
+  regions: VmTypeRegion[];
 }
 
 // --- Pods ---
-
-export interface PodExposePort {
-  port: number;
-  protocol?: string;
-}
 
 export interface PodExposePortResponse {
   port: number;
@@ -116,7 +124,7 @@ export interface Pod {
   singleCardRamInGb?: number;
   singleCardVcpu?: number;
   singleCardPrice?: number;
-  environmentVars?: { key: string; value: string }[];
+  envVars?: { key: string; value: string }[];
   expose?: PodExposePortResponse[];
   initializationCommand?: string;
   sshCmd?: string;
@@ -137,20 +145,20 @@ export interface CreatePodRequest {
   imageRegistry?: string;
   containerVolumeInGb?: number;
   initializationCommand?: string;
-  environmentVars?: { key: string; value: string }[];
-  expose?: PodExposePort[];
+  envVars?: { key: string; value: string }[];
+  ports?: number[];
 }
 
 // --- Endpoints ---
 
 export interface Endpoint {
-  id: number;
+  id: string;
   name: string;
   image: string;
   imageRegistry?: string;
   resources?: EndpointResource[];
   containerVolumeInGb?: number;
-  environmentVars?: { key: string; value: string }[];
+  envVars?: { key: string; value: string }[];
   expose?: { port: number; protocol?: string };
   totalWorkers: number;
   runningWorkers: number;
@@ -158,6 +166,7 @@ export interface Endpoint {
   perHourPrice?: number;
   perSecondPrice?: number;
   serviceMode: string;
+  webhook?: string;
   status: string;
   domain?: string;
   creator?: string;
@@ -182,17 +191,26 @@ export interface CreateEndpointRequest {
   expose?: {
     port: number;
     protocol: string;
-    proxyPort?: number;
   };
   serviceMode: string;
+  webhook?: string;
   initializationCommand?: string;
   credentialId?: number;
 }
 
 export interface UpdateEndpointRequest {
-  name?: string;
-  workers?: number;
+  name: string;
+  resources: EndpointResource[];
+  workers: number;
+  containerVolumeInGb: number;
+  minSingleCardVramInGb?: number;
+  minSingleCardVcpu?: number;
+  minSingleCardRamInGb?: number;
+  credentialId?: number;
+  initializationCommand?: string;
   envVars?: { key: string; value: string }[];
+  expose?: { port: number; protocol: string };
+  webhook?: string;
 }
 
 export interface EndpointWorker {
@@ -213,23 +231,51 @@ export interface EndpointTask {
   taskId: string;
   endpointId: number;
   endpointName: string;
-  userId: number;
-  status: number;
-  statusDescription: string;
+  status: string;
   workerUrl: string;
-  webhookUrl: string;
-  deliveryStatus: number;
+  webhook: string | null;
+  deliveryStatus: string;
   deliveryAttempts: number;
-  errorMessage: string | null;
-  createdAt: string;
-  deliveredAt: string;
-  updatedAt: string;
+  error: string | null;
+  input?: unknown;
+  output?: unknown;
+  headers?: Record<string, string>;
+  createdAt: number;
+  deliveredAt: number | null;
+  updatedAt: number;
 }
 
 export interface TaskCount {
-  total: number;
   processing: number;
-  delivered: number;
-  success: number;
-  failed: number;
+}
+
+// --- Task Submission ---
+
+export interface SubmitTaskRequest {
+  taskId?: string;
+  input: unknown;
+  workerPort: number;
+  processUri: string;
+  webhook?: string;
+  webhookAuthKey?: string;
+  headers?: Record<string, string>;
+}
+
+export interface SubmitTaskResponse {
+  taskId: string;
+}
+
+// --- Worker Logs ---
+
+export interface WorkerLogEntry {
+  timestamp: string;
+  log: string;
+  offset: number;
+}
+
+export interface WorkerLogsResponse {
+  logs: WorkerLogEntry[];
+  hasMore: boolean;
+  nextSearchAfterTime: string | null;
+  nextSearchAfterOffset: string | null;
 }

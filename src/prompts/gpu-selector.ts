@@ -62,7 +62,7 @@ Use these rules to estimate VRAM requirements from model parameter count:
    - Why it fits (VRAM headroom, compute tier)
    - Estimated cost tier
    - Any caveats (e.g., multi-GPU communication overhead, spot risk)
-6. After your recommendation, show the user the exact \`pod_create\` or \`endpoint_create\` tool parameters they would use to provision the recommended GPU.`);
+6. After your recommendation, show the user the exact \`pod_create\` or \`serverless_create\` tool parameters they would use to provision the recommended GPU.`);
 
   return sections.join("\n\n");
 }

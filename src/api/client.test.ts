@@ -102,13 +102,24 @@ describe("YottaClient", () => {
   });
 
   describe("VMs", () => {
-    it("listVms sends POST to /vms/list", async () => {
-      const fetchMock = mockFetch({ pageNumber: 1, pageSize: 10, totalPage: 1, totalRow: 0, records: [] });
+    it("listVms sends GET to /vms with query params", async () => {
+      const fetchMock = mockFetch({ items: [], page: 1, size: 10, total: 0, pages: 0 });
       const client = await freshClient();
-      await client.listVms({ pageNumber: 1, pageSize: 10 });
+      await client.listVms({ page: 1, size: 10 });
       const [url, opts] = fetchMock.mock.calls[0];
-      expect(url).toBe("https://test.yotta.com/v2/vms/list");
-      expect(opts.method).toBe("POST");
+      expect(url).toContain("https://test.yotta.com/v2/vms");
+      expect(url).toContain("page=1");
+      expect(url).toContain("size=10");
+      expect(opts.method).toBe("GET");
+    });
+
+    it("getVmTypes sends GET to /vms/types", async () => {
+      const fetchMock = mockFetch([]);
+      const client = await freshClient();
+      await client.getVmTypes();
+      const [url, opts] = fetchMock.mock.calls[0];
+      expect(url).toBe("https://test.yotta.com/v2/vms/types");
+      expect(opts.method).toBe("GET");
     });
 
     it("terminateVm sends DELETE", async () => {
@@ -150,35 +161,64 @@ describe("YottaClient", () => {
   });
 
   describe("Endpoints", () => {
-    it("scaleEndpointWorkers sends PUT with count query param", async () => {
+    it("scaleEndpointWorkers sends PUT to /serverless path", async () => {
       const fetchMock = mockFetch(null);
       const client = await freshClient();
-      await client.scaleEndpointWorkers(1, 4);
+      await client.scaleEndpointWorkers("ep-1", 4);
       const [url, opts] = fetchMock.mock.calls[0];
-      expect(url).toBe("https://test.yotta.com/v2/endpoints/1/workers?count=4");
+      expect(url).toBe("https://test.yotta.com/v2/serverless/ep-1/workers?count=4");
       expect(opts.method).toBe("PUT");
     });
 
     it("listEndpointTasks builds query string", async () => {
-      const fetchMock = mockFetch({ pageNumber: 1, pageSize: 10, totalRow: 0, records: [] });
+      const fetchMock = mockFetch({ items: [], page: 1, size: 10, total: 0, pages: 0 });
       const client = await freshClient();
-      await client.listEndpointTasks(1, { status: 2, pageNumber: 1, pageSize: 5 });
+      await client.listEndpointTasks("ep-1", { status: "SUCCESS", pageNumber: 1, pageSize: 5 });
       const [url] = fetchMock.mock.calls[0];
-      expect(url).toContain("status=2");
+      expect(url).toContain("status=SUCCESS");
       expect(url).toContain("pageNumber=1");
       expect(url).toContain("pageSize=5");
+    });
+
+    it("submitTask sends POST to /serverless/{id}/tasks", async () => {
+      const fetchMock = mockFetch({ taskId: "task-1" });
+      const client = await freshClient();
+      await client.submitTask("ep-1", { input: { prompt: "hi" }, workerPort: 8000, processUri: "/v1/chat" });
+      const [url, opts] = fetchMock.mock.calls[0];
+      expect(url).toBe("https://test.yotta.com/v2/serverless/ep-1/tasks");
+      expect(opts.method).toBe("POST");
+    });
+
+    it("getTask sends GET to /serverless/{id}/tasks/{taskId}", async () => {
+      const fetchMock = mockFetch({ taskId: "task-1", status: "SUCCESS" });
+      const client = await freshClient();
+      await client.getTask("ep-1", "task-1");
+      const [url, opts] = fetchMock.mock.calls[0];
+      expect(url).toBe("https://test.yotta.com/v2/serverless/ep-1/tasks/task-1");
+      expect(opts.method).toBe("GET");
+    });
+
+    it("getWorkerLogs sends GET with query params", async () => {
+      const fetchMock = mockFetch({ logs: [], hasMore: false });
+      const client = await freshClient();
+      await client.getWorkerLogs("ep-1", "w-1", { pageSize: 50, keyword: "error" });
+      const [url, opts] = fetchMock.mock.calls[0];
+      expect(url).toContain("/serverless/ep-1/workers/w-1/logs");
+      expect(url).toContain("pageSize=50");
+      expect(url).toContain("keyword=error");
+      expect(opts.method).toBe("GET");
     });
   });
 
   describe("Registry", () => {
-    it("createRegistryCredential sends POST", async () => {
-      const fetchMock = mockFetch({ id: 1, name: "test", createdAt: "2024-01-01T00:00:00Z" });
+    it("createRegistryCredential sends POST with type", async () => {
+      const fetchMock = mockFetch({ id: 1, name: "test", type: "DOCKER_HUB", createdAt: "2024-01-01T00:00:00Z" });
       const client = await freshClient();
-      await client.createRegistryCredential({ name: "test", username: "u", password: "p" });
+      await client.createRegistryCredential({ name: "test", type: "DOCKER_HUB", username: "u", password: "p" });
       const [url, opts] = fetchMock.mock.calls[0];
       expect(url).toBe("https://test.yotta.com/v2/container-registry-auths");
       expect(opts.method).toBe("POST");
-      expect(JSON.parse(opts.body)).toMatchObject({ name: "test", username: "u" });
+      expect(JSON.parse(opts.body)).toMatchObject({ name: "test", type: "DOCKER_HUB", username: "u" });
     });
   });
 });
