@@ -17,6 +17,7 @@ describe("tool registration", () => {
       "vm_create",
       "vm_get",
       "vm_list",
+      "vm_types",
       "vm_rename",
       "vm_terminate",
     ]);
@@ -39,25 +40,28 @@ describe("tool registration", () => {
     ]);
   });
 
-  it("registers all expected Endpoint tools", async () => {
+  it("registers all expected Serverless tools", async () => {
     const toolNames: string[] = [];
     const mockServer = { tool: vi.fn((...args: unknown[]) => { toolNames.push(args[0] as string); }) };
 
-    const { registerEndpointTools } = await import("./endpoints.js");
-    registerEndpointTools(mockServer as any);
+    const { registerServerlessTools } = await import("./serverless.js");
+    registerServerlessTools(mockServer as any);
 
     expect(toolNames).toEqual([
-      "endpoint_create",
-      "endpoint_get",
-      "endpoint_list",
-      "endpoint_update",
-      "endpoint_delete",
-      "endpoint_stop",
-      "endpoint_start",
-      "endpoint_scale",
-      "endpoint_list_workers",
-      "endpoint_list_tasks",
-      "endpoint_task_count",
+      "serverless_create",
+      "serverless_get",
+      "serverless_list",
+      "serverless_update",
+      "serverless_delete",
+      "serverless_stop",
+      "serverless_start",
+      "serverless_scale",
+      "serverless_list_workers",
+      "serverless_list_tasks",
+      "serverless_task_count",
+      "serverless_submit_task",
+      "serverless_get_task",
+      "serverless_worker_logs",
     ]);
   });
 
@@ -77,18 +81,21 @@ describe("tool registration", () => {
     ]);
   });
 
-  it("registerTools registers all 27 tools", async () => {
+  it("registerTools registers all 31 tools", async () => {
     const toolNames: string[] = [];
     const mockServer = { tool: vi.fn((...args: unknown[]) => { toolNames.push(args[0] as string); }) };
 
     const { registerTools } = await import("./index.js");
     registerTools(mockServer as any);
 
-    expect(toolNames).toHaveLength(27);
+    expect(toolNames).toHaveLength(31);
     // Spot-check one from each category
     expect(toolNames).toContain("vm_create");
+    expect(toolNames).toContain("vm_types");
     expect(toolNames).toContain("pod_list");
-    expect(toolNames).toContain("endpoint_scale");
+    expect(toolNames).toContain("serverless_scale");
+    expect(toolNames).toContain("serverless_submit_task");
+    expect(toolNames).toContain("serverless_worker_logs");
     expect(toolNames).toContain("registry_delete");
   });
 });

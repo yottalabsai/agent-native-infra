@@ -71,7 +71,7 @@ function buildPromptText(args: {
 
   sections.push(`# Model Serving Assistant
 
-You are a GPU cloud infrastructure advisor for Yotta Platform. Help the user deploy a model as an inference service. Depending on the service mode, this will use either a pod (\`pod_create\`) or a serverless endpoint (\`endpoint_create\`).`);
+You are a GPU cloud infrastructure advisor for Yotta Platform. Help the user deploy a model as an inference service. Depending on the service mode, this will use either a pod (\`pod_create\`) or a serverless endpoint (\`serverless_create\`).`);
 
   // User requirements
   const reqs: string[] = [
@@ -104,9 +104,9 @@ ${fwTable}
 | Mode | Deploy Via | Description |
 |------|-----------|-------------|
 | POD | \`pod_create\` | Interactive GPU instance. Good for development, testing, or single-user serving. |
-| ALB | \`endpoint_create\` | HTTP load balancer with round-robin routing. Real-time inference at scale. |
-| QUEUE | \`endpoint_create\` | Async job queue. Requests enqueued, results delivered via webhook. Ideal for batch/long jobs. |
-| CUSTOM | \`endpoint_create\` | Raw container, no built-in routing. You manage networking (gRPC, custom protocols). |`);
+| ALB | \`serverless_create\` | HTTP load balancer with round-robin routing. Real-time inference at scale. |
+| QUEUE | \`serverless_create\` | Async job queue. Requests enqueued, results delivered via webhook. Ideal for batch/long jobs. |
+| CUSTOM | \`serverless_create\` | Raw container, no built-in routing. You manage networking (gRPC, custom protocols). |`);
 
   // GPU catalog
   sections.push(`## Available GPUs on Yotta Platform\n\`\`\`json\n${JSON.stringify(gpus, null, 2)}\n\`\`\``);
@@ -139,9 +139,9 @@ Base VRAM = model parameters × bytes per precision. Apply 1.1–1.2× overhead 
    - Use \`pod_create\` for a single interactive instance.
    - Expose the serving port (${fw?.defaultPort ?? "8000"}).
    - Set \`containerVolumeInGb\` large enough for model weights (50–100 GB for large models).` : `
-   - Use \`endpoint_create\` with \`serviceMode: "${args.serviceMode}"\`.
+   - Use \`serverless_create\` with \`serviceMode: "${args.serviceMode}"\`.
    - Set \`resources\` with region, GPU type, and count per worker.
-   - Set \`workers\` count (start with 1, scale later with \`endpoint_scale\`).
+   - Set \`workers\` count (start with 1, scale later with \`serverless_scale\`).
    - Set \`containerVolumeInGb\` >= 20 GB (recommend 50–100 GB for large models).
    - Configure \`expose\` with port ${fw?.defaultPort ?? 8000} and protocol ${fw?.protocol ?? "HTTP"}.
    - Endpoint name must be max 20 characters and start with a letter.`}
@@ -158,7 +158,7 @@ pod_create:
   ports: [${fw?.defaultPort ?? 8000}]
   envVars: [{"key": "MODEL_NAME", "value": "${args.model}"}]
 \`\`\`` : `\`\`\`
-endpoint_create:
+serverless_create:
   name: "${args.model.split("/").pop()?.slice(0, 15) ?? "model"}-ep"
   image: "${fw?.image ?? "vllm/vllm-openai:v0.7.3"}"
   resources: [{"region": "us-east-1", "gpuType": "H100_80G", "gpuCount": 1}]
@@ -169,7 +169,7 @@ endpoint_create:
   envVars: [{"key": "MODEL_NAME", "value": "${args.model}"}]
 \`\`\``}
 
-${isPod ? "" : `7. **Remind the user** they can scale workers later with \`endpoint_scale\` and monitor with \`endpoint_list_workers\`${args.serviceMode === "QUEUE" ? " and \`endpoint_list_tasks\`" : ""}.`}`);
+${isPod ? "" : `7. **Remind the user** they can scale workers later with \`serverless_scale\` and monitor with \`serverless_list_workers\`${args.serviceMode === "QUEUE" ? " and \`serverless_list_tasks\`" : ""}.`}`);
 
   return sections.join("\n\n");
 }

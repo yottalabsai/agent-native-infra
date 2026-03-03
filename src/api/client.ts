@@ -7,7 +7,8 @@ import type {
   UpdateRegistryCredentialRequest,
   Vm,
   CreateVmRequest,
-  ListVmsRequest,
+  ListVmsParams,
+  VmType,
   Pod,
   CreatePodRequest,
   Endpoint,
@@ -16,6 +17,9 @@ import type {
   EndpointWorker,
   EndpointTask,
   TaskCount,
+  SubmitTaskRequest,
+  SubmitTaskResponse,
+  WorkerLogsResponse,
 } from "./types.js";
 
 class YottaClient {
@@ -83,8 +87,17 @@ class YottaClient {
     return this.request<Vm>("GET", `/vms/${id}`);
   }
 
-  listVms(req: ListVmsRequest) {
-    return this.request<PaginatedData<Vm>>("POST", "/vms/list", req);
+  listVms(params?: ListVmsParams) {
+    const query = new URLSearchParams();
+    if (params?.page) query.set("page", String(params.page));
+    if (params?.size) query.set("size", String(params.size));
+    if (params?.status) query.set("status", params.status);
+    const qs = query.toString();
+    return this.request<PaginatedData<Vm>>("GET", `/vms${qs ? `?${qs}` : ""}`);
+  }
+
+  getVmTypes() {
+    return this.request<VmType[]>("GET", "/vms/types");
   }
 
   renameVm(id: number, name: string) {
@@ -128,54 +141,83 @@ class YottaClient {
   // --- Endpoints ---
 
   createEndpoint(req: CreateEndpointRequest) {
-    return this.request<Endpoint>("POST", "/endpoints", req);
+    return this.request<Endpoint>("POST", "/serverless", req);
   }
 
-  getEndpoint(id: number) {
-    return this.request<Endpoint>("GET", `/endpoints/${id}`);
+  getEndpoint(id: string) {
+    return this.request<Endpoint>("GET", `/serverless/${id}`);
   }
 
   listEndpoints(statusList?: string) {
     const qs = statusList ? `?statusList=${statusList}` : "";
-    return this.request<Endpoint[]>("GET", `/endpoints${qs}`);
+    return this.request<Endpoint[]>("GET", `/serverless${qs}`);
   }
 
-  updateEndpoint(id: number, req: UpdateEndpointRequest) {
-    return this.request<Endpoint>("PATCH", `/endpoints/${id}`, req);
+  updateEndpoint(id: string, req: UpdateEndpointRequest) {
+    return this.request<Endpoint>("PATCH", `/serverless/${id}`, req);
   }
 
-  deleteEndpoint(id: number) {
-    return this.request<boolean>("DELETE", `/endpoints/${id}`);
+  deleteEndpoint(id: string) {
+    return this.request<boolean>("DELETE", `/serverless/${id}`);
   }
 
-  stopEndpoint(id: number) {
-    return this.request<unknown>("POST", `/endpoints/${id}/stop`);
+  stopEndpoint(id: string) {
+    return this.request<unknown>("POST", `/serverless/${id}/stop`);
   }
 
-  startEndpoint(id: number) {
-    return this.request<unknown>("POST", `/endpoints/${id}/start`);
+  startEndpoint(id: string) {
+    return this.request<unknown>("POST", `/serverless/${id}/start`);
   }
 
-  scaleEndpointWorkers(id: number, count: number) {
-    return this.request<unknown>("PUT", `/endpoints/${id}/workers?count=${count}`);
+  scaleEndpointWorkers(id: string, count: number) {
+    return this.request<unknown>("PUT", `/serverless/${id}/workers?count=${count}`);
   }
 
-  listEndpointWorkers(id: number, statusList?: string) {
+  listEndpointWorkers(id: string, statusList?: string) {
     const qs = statusList ? `?statusList=${statusList}` : "";
-    return this.request<EndpointWorker[]>("GET", `/endpoints/${id}/workers${qs}`);
+    return this.request<EndpointWorker[]>("GET", `/serverless/${id}/workers${qs}`);
   }
 
-  listEndpointTasks(id: number, params?: { status?: number; pageNumber?: number; pageSize?: number }) {
+  listEndpointTasks(id: string, params?: { status?: string; pageNumber?: number; pageSize?: number }) {
     const query = new URLSearchParams();
-    if (params?.status !== undefined) query.set("status", String(params.status));
+    if (params?.status) query.set("status", params.status);
     if (params?.pageNumber) query.set("pageNumber", String(params.pageNumber));
     if (params?.pageSize) query.set("pageSize", String(params.pageSize));
     const qs = query.toString();
-    return this.request<PaginatedData<EndpointTask>>("GET", `/endpoints/${id}/tasks${qs ? `?${qs}` : ""}`);
+    return this.request<PaginatedData<EndpointTask>>("GET", `/serverless/${id}/tasks${qs ? `?${qs}` : ""}`);
   }
 
-  getEndpointTaskCount(id: number) {
-    return this.request<TaskCount>("GET", `/endpoints/${id}/tasks/count`);
+  getEndpointTaskCount(id: string) {
+    return this.request<TaskCount>("GET", `/serverless/${id}/tasks/count`);
+  }
+
+  submitTask(id: string, req: SubmitTaskRequest) {
+    return this.request<SubmitTaskResponse>("POST", `/serverless/${id}/tasks`, req);
+  }
+
+  getTask(endpointId: string, taskId: string) {
+    return this.request<EndpointTask>("GET", `/serverless/${endpointId}/tasks/${taskId}`);
+  }
+
+  getWorkerLogs(endpointId: string, workerId: string, params?: {
+    pageSize?: number;
+    keyword?: string;
+    startTime?: string;
+    endTime?: string;
+    searchAfterTime?: string;
+    searchAfterOffset?: number;
+    direction?: string;
+  }) {
+    const query = new URLSearchParams();
+    if (params?.pageSize) query.set("pageSize", String(params.pageSize));
+    if (params?.keyword) query.set("keyword", params.keyword);
+    if (params?.startTime) query.set("startTime", params.startTime);
+    if (params?.endTime) query.set("endTime", params.endTime);
+    if (params?.searchAfterTime) query.set("searchAfterTime", params.searchAfterTime);
+    if (params?.searchAfterOffset !== undefined) query.set("searchAfterOffset", String(params.searchAfterOffset));
+    if (params?.direction) query.set("direction", params.direction);
+    const qs = query.toString();
+    return this.request<WorkerLogsResponse>("GET", `/serverless/${endpointId}/workers/${workerId}/logs${qs ? `?${qs}` : ""}`);
   }
 }
 

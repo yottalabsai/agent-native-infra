@@ -7,11 +7,6 @@ const envVarSchema = z.object({
   value: z.string(),
 });
 
-const exposePortSchema = z.object({
-  port: z.number().describe("Port number (0-65535)"),
-  protocol: z.string().optional().describe("Protocol (e.g. HTTP, TCP)"),
-});
-
 export function registerPodTools(server: McpServer): void {
   server.tool(
     "pod_create",
@@ -24,8 +19,8 @@ export function registerPodTools(server: McpServer): void {
       region: z.string().optional().describe('Region code (e.g. "us-east-1")'),
       containerVolumeInGb: z.number().optional().describe("Container volume size in GB"),
       initializationCommand: z.string().optional().describe("Command to run on pod start"),
-      environmentVars: z.array(envVarSchema).optional().describe("Environment variables"),
-      expose: z.array(exposePortSchema).optional().describe("Ports to expose"),
+      envVars: z.array(envVarSchema).optional().describe("Environment variables"),
+      ports: z.array(z.number()).optional().describe("Ports to expose (e.g. [8080, 22])"),
     },
     async (args) => {
       const pod = await getClient().createPod(args);
