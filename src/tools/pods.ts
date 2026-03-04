@@ -7,6 +7,11 @@ const envVarSchema = z.object({
   value: z.string(),
 });
 
+const exposePortSchema = z.object({
+  port: z.number(),
+  protocol: z.string().describe('Protocol (e.g. "http", "tcp")'),
+});
+
 export function registerPodTools(server: McpServer): void {
   server.tool(
     "pod_create",
@@ -16,11 +21,18 @@ export function registerPodTools(server: McpServer): void {
       image: z.string().describe('Docker image (e.g. "pytorch/pytorch:2.0.0-cuda11.7-cudnn8-runtime")'),
       gpuType: z.string().describe('GPU type code (e.g. "RTX_4090_24G", "A100_80G")'),
       gpuCount: z.number().describe("Number of GPUs (must be power of 2)"),
-      region: z.string().optional().describe('Region code (e.g. "us-east-1")'),
+      regions: z.array(z.string()).optional().describe('Acceptable region codes for scheduling (e.g. ["us-east-1"])'),
       containerVolumeInGb: z.number().optional().describe("Container volume size in GB"),
+      persistentVolumeInGb: z.number().optional().describe("Persistent volume size in GB"),
+      persistentMountPath: z.string().optional().describe("Persistent volume mount path"),
+      shmInGb: z.number().optional().describe("Shared memory size in GB"),
+      minSingleCardVramInGb: z.number().optional().describe("Minimum single GPU card VRAM in GB"),
+      minSingleCardRamInGb: z.number().optional().describe("Minimum single GPU card RAM in GB"),
+      minSingleCardVcpu: z.number().optional().describe("Minimum single GPU card vCPU count"),
       initializationCommand: z.string().optional().describe("Command to run on pod start"),
-      envVars: z.array(envVarSchema).optional().describe("Environment variables"),
-      ports: z.array(z.number()).optional().describe("Ports to expose (e.g. [8080, 22])"),
+      environmentVars: z.array(envVarSchema).optional().describe("Environment variables"),
+      expose: z.array(exposePortSchema).optional().describe('Ports to expose (e.g. [{port: 8080, protocol: "http"}])'),
+      containerRegistryAuthId: z.number().optional().describe("Container registry credential ID (for private images)"),
     },
     async (args) => {
       const pod = await getClient().createPod(args);

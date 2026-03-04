@@ -8,7 +8,7 @@ Give any AI agent the ability to provision GPUs, launch pods, deploy models, and
 
 | Layer | What it does | Count |
 |-------|-------------|-------|
-| **Tools** | CRUD operations for VMs, Pods, Serverless endpoints, and Registry credentials | 31 |
+| **Tools** | CRUD operations for VMs, Pods, Serverless endpoints, Volumes, and Registry credentials | 37 |
 | **Resources** | GPU catalog with specs, pricing, and availability | 2 |
 | **Prompts** | Guided workflows for GPU selection, pod launch, and model serving | 3 |
 | **Skills** | Agent skill definitions for Claude Code and compatible agents | 3 |
@@ -118,6 +118,19 @@ Full GPU virtual machines.
 | `vm_rename` | Rename a VM |
 | `vm_terminate` | Terminate a VM (irreversible) |
 
+### Volumes
+
+Persistent and object storage for pods and VMs.
+
+| Tool | Description |
+|------|-------------|
+| `volume_create` | Create a storage volume (S3, R2, CEPH, VENDOR) |
+| `volume_list` | List volumes by storage type (paginated) |
+| `volume_get` | Get volume details by ID |
+| `volume_delete` | Delete a volume (must be unmounted) |
+| `volume_rename` | Rename a volume |
+| `volume_resize` | Resize a CEPH or VENDOR volume |
+
 ### Container Registry
 
 Manage credentials for pulling private Docker images.
@@ -222,6 +235,7 @@ src/
 │   ├── vms.ts            # VM tools (6)
 │   ├── pods.ts           # Pod tools (6)
 │   ├── serverless.ts     # Serverless tools (14)
+│   ├── volumes.ts        # Volume tools (6)
 │   └── registry.ts       # Registry tools (5)
 ├── resources/
 │   ├── index.ts          # GPU catalog resources

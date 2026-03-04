@@ -160,7 +160,7 @@ describe("YottaClient", () => {
     });
   });
 
-  describe("Endpoints", () => {
+  describe("Serverless", () => {
     it("scaleEndpointWorkers sends PUT to /serverless path", async () => {
       const fetchMock = mockFetch(null);
       const client = await freshClient();
