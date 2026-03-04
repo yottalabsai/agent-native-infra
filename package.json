@@ -1,9 +1,22 @@
 {
-  "name": "@yotta/agent-native-infra",
+  "name": "@yottascale/agent-native-infra",
   "version": "0.1.0",
-  "description": "MCP server and skills for Yotta Platform infrastructure",
+  "description": "MCP server and agent skills for Yotta Platform GPU cloud",
   "license": "MIT",
   "type": "module",
+  "main": "dist/index.js",
+  "bin": {
+    "yotta-agentic-infra": "dist/index.js"
+  },
+  "files": [
+    "dist/",
+    "skills/",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
   "scripts": {
     "build": "tsc",
     "dev": "tsx watch src/index.ts",
