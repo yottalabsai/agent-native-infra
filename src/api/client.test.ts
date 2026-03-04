@@ -40,13 +40,13 @@ describe("YottaClient", () => {
   });
 
   describe("request basics", () => {
-    it("sends correct Authorization header", async () => {
+    it("sends correct X-API-Key header", async () => {
       const fetchMock = mockFetch([]);
       const client = await freshClient();
       await client.listPods();
       expect(fetchMock).toHaveBeenCalledOnce();
       const [, opts] = fetchMock.mock.calls[0];
-      expect(opts.headers.Authorization).toBe("Bearer test-api-key");
+      expect(opts.headers["X-API-Key"]).toBe("test-api-key");
     });
 
     it("prefixes paths with /v2", async () => {

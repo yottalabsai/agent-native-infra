@@ -37,7 +37,7 @@ class YottaClient {
     const res = await fetch(url, {
       method,
       headers: {
-        Authorization: `Bearer ${this.apiKey}`,
+        "X-API-Key": this.apiKey,
         "Content-Type": "application/json",
       },
       body: body ? JSON.stringify(body) : undefined,
