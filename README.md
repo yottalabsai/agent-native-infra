@@ -197,7 +197,7 @@ Compatible with Claude Code and any agent framework that supports skill files.
 | Environment Variable | Required | Default | Description |
 |---------------------|----------|---------|-------------|
 | `YOTTA_API_KEY` | Yes | — | Yotta Platform API key |
-| `YOTTA_API_BASE_URL` | No | `https://api.test.yottalabs.ai` | API base URL |
+| `YOTTA_API_BASE_URL` | No | `https://api.yottalabs.ai` | API base URL |
 
 ## Development
 
