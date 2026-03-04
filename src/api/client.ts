@@ -20,6 +20,9 @@ import type {
   SubmitTaskRequest,
   SubmitTaskResponse,
   WorkerLogsResponse,
+  Volume,
+  CreateVolumeRequest,
+  ListVolumesParams,
 } from "./types.js";
 
 class YottaClient {
@@ -218,6 +221,37 @@ class YottaClient {
     if (params?.direction) query.set("direction", params.direction);
     const qs = query.toString();
     return this.request<WorkerLogsResponse>("GET", `/serverless/${endpointId}/workers/${workerId}/logs${qs ? `?${qs}` : ""}`);
+  }
+
+  // --- Volumes ---
+
+  createVolume(req: CreateVolumeRequest) {
+    return this.request<Volume>("POST", "/volumes", req);
+  }
+
+  listVolumes(params: ListVolumesParams) {
+    const query = new URLSearchParams();
+    query.set("storageType", params.storageType);
+    if (params.page) query.set("page", String(params.page));
+    if (params.size) query.set("size", String(params.size));
+    if (params.region) query.set("region", params.region);
+    return this.request<PaginatedData<Volume>>("GET", `/volumes?${query.toString()}`);
+  }
+
+  getVolume(id: number) {
+    return this.request<Volume>("GET", `/volumes/${id}`);
+  }
+
+  deleteVolume(id: number) {
+    return this.request<boolean>("DELETE", `/volumes/${id}`);
+  }
+
+  renameVolume(id: number, name: string) {
+    return this.request<Volume>("POST", `/volumes/${id}/name`, { name });
+  }
+
+  resizeVolume(id: number, sizeInGb: number) {
+    return this.request<null>("POST", `/volumes/${id}/resize`, { sizeInGb });
   }
 }
 

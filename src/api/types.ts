@@ -97,6 +97,11 @@ export interface VmType {
 
 // --- Pods ---
 
+export interface PodExposePortRequest {
+  port: number;
+  protocol: string;
+}
+
 export interface PodExposePortResponse {
   port: number;
   proxyPort?: number;
@@ -105,6 +110,12 @@ export interface PodExposePortResponse {
   healthy?: boolean;
   ingressUrl?: string;
   serviceName?: string;
+}
+
+export interface PodPersistentVolume {
+  volumeId: number;
+  mountPath: string;
+  needBackup?: boolean;
 }
 
 export interface Pod {
@@ -124,14 +135,14 @@ export interface Pod {
   singleCardRamInGb?: number;
   singleCardVcpu?: number;
   singleCardPrice?: number;
-  envVars?: { key: string; value: string }[];
+  environmentVars?: { key: string; value: string }[];
   expose?: PodExposePortResponse[];
   initializationCommand?: string;
   sshCmd?: string;
   internalIp?: string;
   status: string;
-  createdAt: string;
-  updatedAt?: string;
+  createdAt: number;
+  updatedAt?: number;
 }
 
 export interface CreatePodRequest {
@@ -139,14 +150,23 @@ export interface CreatePodRequest {
   image: string;
   gpuType: string;
   gpuCount: number;
+  regions?: string[];
   region?: string;
-  regionList?: string[];
   containerRegistryAuthId?: number;
   imageRegistry?: string;
+  imagePublicType?: string;
+  resourceType?: string;
   containerVolumeInGb?: number;
+  persistentVolumeInGb?: number;
+  persistentMountPath?: string;
+  shmInGb?: number;
+  minSingleCardVramInGb?: number;
+  minSingleCardRamInGb?: number;
+  minSingleCardVcpu?: number;
   initializationCommand?: string;
-  envVars?: { key: string; value: string }[];
-  ports?: number[];
+  environmentVars?: { key: string; value: string }[];
+  expose?: PodExposePortRequest[];
+  persistentVolumes?: PodPersistentVolume[];
 }
 
 // --- Endpoints ---
@@ -158,7 +178,7 @@ export interface Endpoint {
   imageRegistry?: string;
   resources?: EndpointResource[];
   containerVolumeInGb?: number;
-  envVars?: { key: string; value: string }[];
+  environmentVars?: { key: string; value: string }[];
   expose?: { port: number; protocol?: string };
   totalWorkers: number;
   runningWorkers: number;
@@ -184,10 +204,11 @@ export interface CreateEndpointRequest {
   name: string;
   imageRegistry?: string;
   image: string;
+  containerRegistryAuthId?: number;
   resources: EndpointResource[];
   workers: number;
   containerVolumeInGb: number;
-  envVars?: { key: string; value: string }[];
+  environmentVars?: { key: string; value: string }[];
   expose?: {
     port: number;
     protocol: string;
@@ -195,7 +216,6 @@ export interface CreateEndpointRequest {
   serviceMode: string;
   webhook?: string;
   initializationCommand?: string;
-  credentialId?: number;
 }
 
 export interface UpdateEndpointRequest {
@@ -278,4 +298,34 @@ export interface WorkerLogsResponse {
   hasMore: boolean;
   nextSearchAfterTime: string | null;
   nextSearchAfterOffset: string | null;
+}
+
+// --- Volumes ---
+
+export interface Volume {
+  id: number;
+  name: string;
+  sizeInGb: number | null;
+  region: string | null;
+  storageType: string;
+  status: string;
+  vendorVolumeType: string | null;
+  mountCount: number;
+  cost: number;
+  createdAt: number;
+}
+
+export interface CreateVolumeRequest {
+  name: string;
+  storageType: string;
+  region?: string;
+  sizeInGb?: number;
+  vendorVolumeType?: string;
+}
+
+export interface ListVolumesParams {
+  storageType: string;
+  page?: number;
+  size?: number;
+  region?: string;
 }

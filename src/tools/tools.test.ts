@@ -81,14 +81,31 @@ describe("tool registration", () => {
     ]);
   });
 
-  it("registerTools registers all 31 tools", async () => {
+  it("registers all expected Volume tools", async () => {
+    const toolNames: string[] = [];
+    const mockServer = { tool: vi.fn((...args: unknown[]) => { toolNames.push(args[0] as string); }) };
+
+    const { registerVolumeTools } = await import("./volumes.js");
+    registerVolumeTools(mockServer as any);
+
+    expect(toolNames).toEqual([
+      "volume_create",
+      "volume_list",
+      "volume_get",
+      "volume_delete",
+      "volume_rename",
+      "volume_resize",
+    ]);
+  });
+
+  it("registerTools registers all 37 tools", async () => {
     const toolNames: string[] = [];
     const mockServer = { tool: vi.fn((...args: unknown[]) => { toolNames.push(args[0] as string); }) };
 
     const { registerTools } = await import("./index.js");
     registerTools(mockServer as any);
 
-    expect(toolNames).toHaveLength(31);
+    expect(toolNames).toHaveLength(37);
     // Spot-check one from each category
     expect(toolNames).toContain("vm_create");
     expect(toolNames).toContain("vm_types");
@@ -97,5 +114,7 @@ describe("tool registration", () => {
     expect(toolNames).toContain("serverless_submit_task");
     expect(toolNames).toContain("serverless_worker_logs");
     expect(toolNames).toContain("registry_delete");
+    expect(toolNames).toContain("volume_create");
+    expect(toolNames).toContain("volume_resize");
   });
 });
