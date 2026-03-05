@@ -1,8 +1,10 @@
-# @yotta/agent-native-infra
+# @yottascale/agent-native-infra
 
 MCP server and agent skills for [Yotta Platform](https://yotta.com) — the GPU cloud for AI/ML workloads.
 
 Give any AI agent the ability to provision GPUs, launch pods, deploy models, and manage infrastructure through natural language. Built on the [Model Context Protocol](https://modelcontextprotocol.io) (MCP).
+
+[![npm](https://img.shields.io/npm/v/@yottascale/agent-native-infra)](https://www.npmjs.com/package/@yottascale/agent-native-infra)
 
 ## What's included
 
@@ -20,19 +22,6 @@ Give any AI agent the ability to provision GPUs, launch pods, deploy models, and
 - Node.js >= 18
 - A Yotta Platform API key ([get one here](https://yotta.com))
 
-### Install and build
-
-```bash
-npm install
-npm run build
-```
-
-### Run the server
-
-```bash
-YOTTA_API_KEY=your-api-key npx tsx src/index.ts
-```
-
 ### Use with Claude Desktop
 
 Add to your Claude Desktop config (`~/Library/Application Support/Claude/claude_desktop_config.json`):
@@ -42,7 +31,7 @@ Add to your Claude Desktop config (`~/Library/Application Support/Claude/claude_
   "mcpServers": {
     "yotta": {
       "command": "npx",
-      "args": ["tsx", "/path/to/agent-native-infra/src/index.ts"],
+      "args": ["-y", "@yottascale/agent-native-infra"],
       "env": {
         "YOTTA_API_KEY": "your-api-key"
       }
@@ -54,7 +43,7 @@ Add to your Claude Desktop config (`~/Library/Application Support/Claude/claude_
 ### Use with Claude Code
 
 ```bash
-claude mcp add yotta -- npx tsx /path/to/agent-native-infra/src/index.ts
+claude mcp add yotta -- npx -y @yottascale/agent-native-infra
 ```
 
 Set the API key in your environment:
@@ -63,10 +52,49 @@ Set the API key in your environment:
 export YOTTA_API_KEY=your-api-key
 ```
 
+### Use with Cursor, Windsurf, or any MCP-compatible client
+
+```json
+{
+  "mcpServers": {
+    "yotta": {
+      "command": "npx",
+      "args": ["-y", "@yottascale/agent-native-infra"],
+      "env": {
+        "YOTTA_API_KEY": "your-api-key"
+      }
+    }
+  }
+}
+```
+
+### Run locally (from source)
+
+```bash
+git clone https://github.com/yottalabsai/agent-native-infra
+cd agent-native-infra
+npm install
+YOTTA_API_KEY=your-api-key npx tsx src/index.ts
+```
+
+Or point Claude Desktop / Claude Code at the local build:
+
+```json
+{
+  "mcpServers": {
+    "yotta": {
+      "command": "npx",
+      "args": ["tsx", "/path/to/agent-native-infra/src/index.ts"],
+      "env": { "YOTTA_API_KEY": "your-api-key" }
+    }
+  }
+}
+```
+
 ### Test with MCP Inspector
 
 ```bash
-YOTTA_API_KEY=your-api-key npx @modelcontextprotocol/inspector npx tsx src/index.ts
+YOTTA_API_KEY=your-api-key npx @modelcontextprotocol/inspector npx -y @yottascale/agent-native-infra
 ```
 
 ## Tools

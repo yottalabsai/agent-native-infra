@@ -1,0 +1,16 @@
+startCommand:
+  type: stdio
+  configSchema:
+    type: object
+    properties:
+      apiKey:
+        type: string
+        description: "Yotta Platform API key (get one at https://yotta.com)"
+    required:
+      - apiKey
+  commandFunction: |-
+    (config) => ({
+      command: "npx",
+      args: ["-y", "@yottascale/agent-native-infra"],
+      env: { YOTTA_API_KEY: config.apiKey }
+    })
