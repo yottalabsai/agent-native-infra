@@ -11,11 +11,11 @@ import type {
   VmType,
   Pod,
   CreatePodRequest,
-  Endpoint,
-  CreateEndpointRequest,
-  UpdateEndpointRequest,
-  EndpointWorker,
-  EndpointTask,
+  Serverless,
+  CreateServerlessRequest,
+  UpdateServerlessRequest,
+  ServerlessWorker,
+  ServerlessTask,
   TaskCount,
   SubmitTaskRequest,
   SubmitTaskResponse,
@@ -141,68 +141,68 @@ class YottaClient {
     return this.request<unknown>("POST", `/pods/${id}/resume`);
   }
 
-  // --- Endpoints ---
+  // --- Serverless ---
 
-  createEndpoint(req: CreateEndpointRequest) {
-    return this.request<Endpoint>("POST", "/serverless", req);
+  createServerless(req: CreateServerlessRequest) {
+    return this.request<Serverless>("POST", "/serverless", req);
   }
 
-  getEndpoint(id: string) {
-    return this.request<Endpoint>("GET", `/serverless/${id}`);
+  getServerless(id: string) {
+    return this.request<Serverless>("GET", `/serverless/${id}`);
   }
 
-  listEndpoints(statusList?: string) {
+  listServerless(statusList?: string) {
     const qs = statusList ? `?statusList=${statusList}` : "";
-    return this.request<Endpoint[]>("GET", `/serverless${qs}`);
+    return this.request<Serverless[]>("GET", `/serverless${qs}`);
   }
 
-  updateEndpoint(id: string, req: UpdateEndpointRequest) {
-    return this.request<Endpoint>("PATCH", `/serverless/${id}`, req);
+  updateServerless(id: string, req: UpdateServerlessRequest) {
+    return this.request<Serverless>("PATCH", `/serverless/${id}`, req);
   }
 
-  deleteEndpoint(id: string) {
+  deleteServerless(id: string) {
     return this.request<boolean>("DELETE", `/serverless/${id}`);
   }
 
-  stopEndpoint(id: string) {
+  stopServerless(id: string) {
     return this.request<unknown>("POST", `/serverless/${id}/stop`);
   }
 
-  startEndpoint(id: string) {
+  startServerless(id: string) {
     return this.request<unknown>("POST", `/serverless/${id}/start`);
   }
 
-  scaleEndpointWorkers(id: string, count: number) {
+  scaleServerlessWorkers(id: string, count: number) {
     return this.request<unknown>("PUT", `/serverless/${id}/workers?count=${count}`);
   }
 
-  listEndpointWorkers(id: string, statusList?: string) {
+  listServerlessWorkers(id: string, statusList?: string) {
     const qs = statusList ? `?statusList=${statusList}` : "";
-    return this.request<EndpointWorker[]>("GET", `/serverless/${id}/workers${qs}`);
+    return this.request<ServerlessWorker[]>("GET", `/serverless/${id}/workers${qs}`);
   }
 
-  listEndpointTasks(id: string, params?: { status?: string; pageNumber?: number; pageSize?: number }) {
+  listServerlessTasks(id: string, params?: { status?: string; pageNumber?: number; pageSize?: number }) {
     const query = new URLSearchParams();
     if (params?.status) query.set("status", params.status);
     if (params?.pageNumber) query.set("pageNumber", String(params.pageNumber));
     if (params?.pageSize) query.set("pageSize", String(params.pageSize));
     const qs = query.toString();
-    return this.request<PaginatedData<EndpointTask>>("GET", `/serverless/${id}/tasks${qs ? `?${qs}` : ""}`);
+    return this.request<PaginatedData<ServerlessTask>>("GET", `/serverless/${id}/tasks${qs ? `?${qs}` : ""}`);
   }
 
-  getEndpointTaskCount(id: string) {
+  getServerlessTaskCount(id: string) {
     return this.request<TaskCount>("GET", `/serverless/${id}/tasks/count`);
   }
 
-  submitTask(id: string, req: SubmitTaskRequest) {
+  submitServerlessTask(id: string, req: SubmitTaskRequest) {
     return this.request<SubmitTaskResponse>("POST", `/serverless/${id}/tasks`, req);
   }
 
-  getTask(endpointId: string, taskId: string) {
-    return this.request<EndpointTask>("GET", `/serverless/${endpointId}/tasks/${taskId}`);
+  getServerlessTask(endpointId: string, taskId: string) {
+    return this.request<ServerlessTask>("GET", `/serverless/${endpointId}/tasks/${taskId}`);
   }
 
-  getWorkerLogs(endpointId: string, workerId: string, params?: {
+  getServerlessWorkerLogs(endpointId: string, workerId: string, params?: {
     pageSize?: number;
     keyword?: string;
     startTime?: string;

@@ -161,47 +161,47 @@ describe("YottaClient", () => {
   });
 
   describe("Serverless", () => {
-    it("scaleEndpointWorkers sends PUT to /serverless path", async () => {
+    it("scaleServerlessWorkers sends PUT to /serverless path", async () => {
       const fetchMock = mockFetch(null);
       const client = await freshClient();
-      await client.scaleEndpointWorkers("ep-1", 4);
+      await client.scaleServerlessWorkers("ep-1", 4);
       const [url, opts] = fetchMock.mock.calls[0];
       expect(url).toBe("https://test.yotta.com/v2/serverless/ep-1/workers?count=4");
       expect(opts.method).toBe("PUT");
     });
 
-    it("listEndpointTasks builds query string", async () => {
+    it("listServerlessTasks builds query string", async () => {
       const fetchMock = mockFetch({ items: [], page: 1, size: 10, total: 0, pages: 0 });
       const client = await freshClient();
-      await client.listEndpointTasks("ep-1", { status: "SUCCESS", pageNumber: 1, pageSize: 5 });
+      await client.listServerlessTasks("ep-1", { status: "SUCCESS", pageNumber: 1, pageSize: 5 });
       const [url] = fetchMock.mock.calls[0];
       expect(url).toContain("status=SUCCESS");
       expect(url).toContain("pageNumber=1");
       expect(url).toContain("pageSize=5");
     });
 
-    it("submitTask sends POST to /serverless/{id}/tasks", async () => {
+    it("submitServerlessTask sends POST to /serverless/{id}/tasks", async () => {
       const fetchMock = mockFetch({ taskId: "task-1" });
       const client = await freshClient();
-      await client.submitTask("ep-1", { input: { prompt: "hi" }, workerPort: 8000, processUri: "/v1/chat" });
+      await client.submitServerlessTask("ep-1", { input: { prompt: "hi" }, workerPort: 8000, processUri: "/v1/chat" });
       const [url, opts] = fetchMock.mock.calls[0];
       expect(url).toBe("https://test.yotta.com/v2/serverless/ep-1/tasks");
       expect(opts.method).toBe("POST");
     });
 
-    it("getTask sends GET to /serverless/{id}/tasks/{taskId}", async () => {
+    it("getServerlessTask sends GET to /serverless/{id}/tasks/{taskId}", async () => {
       const fetchMock = mockFetch({ taskId: "task-1", status: "SUCCESS" });
       const client = await freshClient();
-      await client.getTask("ep-1", "task-1");
+      await client.getServerlessTask("ep-1", "task-1");
       const [url, opts] = fetchMock.mock.calls[0];
       expect(url).toBe("https://test.yotta.com/v2/serverless/ep-1/tasks/task-1");
       expect(opts.method).toBe("GET");
     });
 
-    it("getWorkerLogs sends GET with query params", async () => {
+    it("getServerlessWorkerLogs sends GET with query params", async () => {
       const fetchMock = mockFetch({ logs: [], hasMore: false });
       const client = await freshClient();
-      await client.getWorkerLogs("ep-1", "w-1", { pageSize: 50, keyword: "error" });
+      await client.getServerlessWorkerLogs("ep-1", "w-1", { pageSize: 50, keyword: "error" });
       const [url, opts] = fetchMock.mock.calls[0];
       expect(url).toContain("/serverless/ep-1/workers/w-1/logs");
       expect(url).toContain("pageSize=50");

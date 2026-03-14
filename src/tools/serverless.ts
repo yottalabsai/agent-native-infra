@@ -31,17 +31,17 @@ export function registerServerlessTools(server: McpServer): void {
       webhook: z.string().optional().describe("Webhook URL for worker status notifications (max 512 chars)"),
     },
     async (args) => {
-      const ep = await getClient().createEndpoint(args);
+      const ep = await getClient().createServerless(args);
       return { content: [{ type: "text" as const, text: JSON.stringify(ep, null, 2) }] };
     }
   );
 
   server.tool(
     "serverless_get",
-    "Get details of a specific endpoint by ID",
+    "Get details of a specific serverless endpoint by ID",
     { id: z.string().describe("Endpoint ID") },
     async ({ id }) => {
-      const ep = await getClient().getEndpoint(id);
+      const ep = await getClient().getServerless(id);
       return { content: [{ type: "text" as const, text: JSON.stringify(ep, null, 2) }] };
     }
   );
@@ -53,14 +53,14 @@ export function registerServerlessTools(server: McpServer): void {
       statusList: z.string().optional().describe("Filter by status (comma-separated)"),
     },
     async ({ statusList }) => {
-      const eps = await getClient().listEndpoints(statusList);
+      const eps = await getClient().listServerless(statusList);
       return { content: [{ type: "text" as const, text: JSON.stringify(eps, null, 2) }] };
     }
   );
 
   server.tool(
     "serverless_update",
-    "Update an endpoint configuration",
+    "Update a serverless endpoint configuration",
     {
       id: z.string().describe("Endpoint ID"),
       name: z.string().describe("Endpoint name"),
@@ -72,70 +72,70 @@ export function registerServerlessTools(server: McpServer): void {
       webhook: z.string().optional().describe("Webhook URL for worker status notifications"),
     },
     async ({ id, ...updates }) => {
-      const ep = await getClient().updateEndpoint(id, updates);
+      const ep = await getClient().updateServerless(id, updates);
       return { content: [{ type: "text" as const, text: JSON.stringify(ep, null, 2) }] };
     }
   );
 
   server.tool(
     "serverless_delete",
-    "Delete an endpoint. This action is irreversible.",
+    "Delete a serverless endpoint. This action is irreversible.",
     { id: z.string().describe("Endpoint ID") },
     async ({ id }) => {
-      await getClient().deleteEndpoint(id);
-      return { content: [{ type: "text" as const, text: `Endpoint ${id} deleted.` }] };
+      await getClient().deleteServerless(id);
+      return { content: [{ type: "text" as const, text: `Serverless endpoint ${id} deleted.` }] };
     }
   );
 
   server.tool(
     "serverless_stop",
-    "Stop a running endpoint",
+    "Stop a running serverless endpoint",
     { id: z.string().describe("Endpoint ID") },
     async ({ id }) => {
-      await getClient().stopEndpoint(id);
-      return { content: [{ type: "text" as const, text: `Endpoint ${id} stopped.` }] };
+      await getClient().stopServerless(id);
+      return { content: [{ type: "text" as const, text: `Serverless endpoint ${id} stopped.` }] };
     }
   );
 
   server.tool(
     "serverless_start",
-    "Start a stopped endpoint",
+    "Start a stopped serverless endpoint",
     { id: z.string().describe("Endpoint ID") },
     async ({ id }) => {
-      await getClient().startEndpoint(id);
-      return { content: [{ type: "text" as const, text: `Endpoint ${id} started.` }] };
+      await getClient().startServerless(id);
+      return { content: [{ type: "text" as const, text: `Serverless endpoint ${id} started.` }] };
     }
   );
 
   server.tool(
     "serverless_scale",
-    "Scale the number of workers for an endpoint",
+    "Scale the number of workers for a serverless endpoint",
     {
       id: z.string().describe("Endpoint ID"),
       count: z.number().describe("Target worker count"),
     },
     async ({ id, count }) => {
-      await getClient().scaleEndpointWorkers(id, count);
-      return { content: [{ type: "text" as const, text: `Endpoint ${id} scaled to ${count} workers.` }] };
+      await getClient().scaleServerlessWorkers(id, count);
+      return { content: [{ type: "text" as const, text: `Serverless endpoint ${id} scaled to ${count} workers.` }] };
     }
   );
 
   server.tool(
     "serverless_list_workers",
-    "List workers for an endpoint",
+    "List workers for a serverless endpoint",
     {
       id: z.string().describe("Endpoint ID"),
       statusList: z.string().optional().describe("Filter by worker status (comma-separated)"),
     },
     async ({ id, statusList }) => {
-      const workers = await getClient().listEndpointWorkers(id, statusList);
+      const workers = await getClient().listServerlessWorkers(id, statusList);
       return { content: [{ type: "text" as const, text: JSON.stringify(workers, null, 2) }] };
     }
   );
 
   server.tool(
     "serverless_list_tasks",
-    "List tasks for a QUEUE-mode endpoint",
+    "List tasks for a QUEUE-mode serverless endpoint",
     {
       id: z.string().describe("Endpoint ID"),
       status: z.enum(["PROCESSING", "DELIVERED", "SUCCESS", "FAILED"]).optional().describe("Filter by task status"),
@@ -143,24 +143,24 @@ export function registerServerlessTools(server: McpServer): void {
       pageSize: z.number().optional().describe("Page size"),
     },
     async ({ id, ...params }) => {
-      const tasks = await getClient().listEndpointTasks(id, params);
+      const tasks = await getClient().listServerlessTasks(id, params);
       return { content: [{ type: "text" as const, text: JSON.stringify(tasks, null, 2) }] };
     }
   );
 
   server.tool(
     "serverless_task_count",
-    "Get task status counts for a QUEUE-mode endpoint",
+    "Get task status counts for a QUEUE-mode serverless endpoint",
     { id: z.string().describe("Endpoint ID") },
     async ({ id }) => {
-      const counts = await getClient().getEndpointTaskCount(id);
+      const counts = await getClient().getServerlessTaskCount(id);
       return { content: [{ type: "text" as const, text: JSON.stringify(counts, null, 2) }] };
     }
   );
 
   server.tool(
     "serverless_submit_task",
-    "Submit a task to a QUEUE-mode endpoint",
+    "Submit a task to a QUEUE-mode serverless endpoint",
     {
       id: z.string().describe("Endpoint ID"),
       input: z.record(z.unknown()).describe("Task input data (any JSON)"),
@@ -172,7 +172,7 @@ export function registerServerlessTools(server: McpServer): void {
       headers: z.record(z.string()).optional().describe("Headers to forward with the task request"),
     },
     async ({ id, ...params }) => {
-      const result = await getClient().submitTask(id, params);
+      const result = await getClient().submitServerlessTask(id, params);
       return { content: [{ type: "text" as const, text: JSON.stringify(result, null, 2) }] };
     }
   );
@@ -185,14 +185,14 @@ export function registerServerlessTools(server: McpServer): void {
       taskId: z.string().describe("Task ID"),
     },
     async ({ id, taskId }) => {
-      const task = await getClient().getTask(id, taskId);
+      const task = await getClient().getServerlessTask(id, taskId);
       return { content: [{ type: "text" as const, text: JSON.stringify(task, null, 2) }] };
     }
   );
 
   server.tool(
     "serverless_worker_logs",
-    "Get logs from a specific worker",
+    "Get logs from a specific serverless worker",
     {
       id: z.string().describe("Endpoint ID"),
       workerId: z.string().describe("Worker ID"),
@@ -203,7 +203,7 @@ export function registerServerlessTools(server: McpServer): void {
       direction: z.enum(["Forward", "Backward"]).optional().describe("Log traversal direction"),
     },
     async ({ id, workerId, ...params }) => {
-      const logs = await getClient().getWorkerLogs(id, workerId, params);
+      const logs = await getClient().getServerlessWorkerLogs(id, workerId, params);
       return { content: [{ type: "text" as const, text: JSON.stringify(logs, null, 2) }] };
     }
   );

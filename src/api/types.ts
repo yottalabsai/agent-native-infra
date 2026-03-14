@@ -169,14 +169,14 @@ export interface CreatePodRequest {
   persistentVolumes?: PodPersistentVolume[];
 }
 
-// --- Endpoints ---
+// --- Serverless ---
 
-export interface Endpoint {
+export interface Serverless {
   id: string;
   name: string;
   image: string;
   imageRegistry?: string;
-  resources?: EndpointResource[];
+  resources?: ServerlessResource[];
   containerVolumeInGb?: number;
   environmentVars?: { key: string; value: string }[];
   expose?: { port: number; protocol?: string };
@@ -194,18 +194,18 @@ export interface Endpoint {
   updatedAt?: string;
 }
 
-export interface EndpointResource {
+export interface ServerlessResource {
   region: string;
   gpuType: string;
   gpuCount: number;
 }
 
-export interface CreateEndpointRequest {
+export interface CreateServerlessRequest {
   name: string;
   imageRegistry?: string;
   image: string;
   containerRegistryAuthId?: number;
-  resources: EndpointResource[];
+  resources: ServerlessResource[];
   workers: number;
   containerVolumeInGb: number;
   environmentVars?: { key: string; value: string }[];
@@ -218,9 +218,9 @@ export interface CreateEndpointRequest {
   initializationCommand?: string;
 }
 
-export interface UpdateEndpointRequest {
+export interface UpdateServerlessRequest {
   name: string;
-  resources: EndpointResource[];
+  resources: ServerlessResource[];
   workers: number;
   containerVolumeInGb: number;
   minSingleCardVramInGb?: number;
@@ -233,7 +233,7 @@ export interface UpdateEndpointRequest {
   webhook?: string;
 }
 
-export interface EndpointWorker {
+export interface ServerlessWorker {
   id: string;
   region?: string;
   gpuType?: string;
@@ -247,7 +247,7 @@ export interface EndpointWorker {
   status: string;
 }
 
-export interface EndpointTask {
+export interface ServerlessTask {
   taskId: string;
   endpointId: number;
   endpointName: string;
